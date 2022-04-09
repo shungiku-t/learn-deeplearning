@@ -1,25 +1,30 @@
+from os import name
 import numpy as np
-from dezero import Variable
+from dezero.core import Variable, pow, sub, mul
 
+# x = Variable(np.array(2.0))
+# y = x ** 4 - 2 * x ** 2
+# y.backward()
+# assert x.grad.data == np.array(24.0)
 
-def rosenbrock(x0, x1) -> Variable:
-    y = 100 * (x1 - x0 ** 2) ** 2 + (x0 - 1) ** 2
-    return y
+# gx = x.grad
+# x.cleargrad()
+# print("*********")
+# print(gx)
+# gx.backward()
+# assert x.grad.data == np.array(68.0)
 
+x = Variable(np.array(2.0))
+a = pow(x, 4, name="f1")
+b = pow(x, 2, name="f2")
+c = mul(b, Variable(np.array(2.0)), name="f3")
+y = sub(a, c, name="f4")
 
-x0 = Variable(np.array(0.0))
-x1 = Variable(np.array(2.0))
+y.backward(display_fname=True)
+print("y: ", y.data)
+print("gy: ", y.grad)
+print("x.grad: ", x.grad.data)
 
-lr = 0.001
-
-for _ in range(1000):
-    y = rosenbrock(x0, x1)
-    x0.cleargrad()
-    x1.cleargrad()
-    y.backward()
-    if x0.grad is None or x1.grad is None:
-        raise Exception
-    x0.data = x0.data - lr * x0.grad
-    x1.data = x1.data - lr * x1.grad
-
-    print(x0, x1)
+gx = x.grad
+gx.backward(display_fname=True)
+print("x.grad: ", x.data)

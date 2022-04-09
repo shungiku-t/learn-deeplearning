@@ -1,5 +1,6 @@
+from unittest import expectedFailure
 import numpy as np
-from dezero.core import Variable
+from dezero.core_simple import Variable
 
 
 class TestVariable:
@@ -29,7 +30,7 @@ class TestVariable:
         y = x.T
         assert (y.data == expected.data).all()
 
-    def test_add_forward(self):
+    def test_add(self):
         expected = Variable(np.array(5.0))
 
         # Varibleのみ
@@ -152,24 +153,3 @@ class TestVariable:
 
         y = self.v0 ** 2
         assert y.data == expected.data
-
-    def test_backward(self):
-        x = Variable(np.array(2.0))
-        y = x ** 4 - 2 * x ** 2
-        y.backward()
-        assert x.grad.data == np.array(24.0)
-
-        gx = x.grad
-        x.cleargrad()
-        print("*********")
-        print(gx)
-        gx.backward()
-        assert x.grad.data == np.array(68.0)
-
-    # def test_matyas(self):
-    #     x = Variable(np.array(1.0))
-    #     y = Variable(np.array(1.0))
-    #     z = 0.26 * (x ** 2 + y ** 2) - 0.48 * x * y
-    #     z.backward()
-    #     print(x.grad)
-    #     print(y.grad)
