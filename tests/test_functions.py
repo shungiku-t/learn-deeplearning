@@ -1,6 +1,15 @@
 import numpy as np
 from dezero.core import Variable
-from dezero.functions import BroadCastTo, Reshape, SumTo, broad_cast_to, reshape, sum_to
+from dezero.functions import (
+    BroadCastTo,
+    MatMul,
+    Reshape,
+    SumTo,
+    broad_cast_to,
+    matmul,
+    reshape,
+    sum_to,
+)
 
 
 class TestReshape:
@@ -81,3 +90,21 @@ class TestSumTo:
         x: Variable = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
         y: Variable = sum_to(x)
         assert np.array_equal(y.data, expected.data)
+
+
+class TestMatMul:
+    def test_forward(self):
+        expected = np.array([[19, 22], [43, 50]])
+        a = np.array([[1, 2], [3, 4]])
+        b = np.array([[5, 6], [7, 8]])
+        f: MatMul = MatMul()
+        y = f.forward(*(a, b))
+        assert np.array_equal(y, expected)
+
+    def test_backward(self):
+        x = Variable(np.random.randn(2, 3))
+        W = Variable(np.random.randn(3, 4))
+        y = matmul(x, W)
+        y.backward()
+        assert x.grad.shape == (2, 3)
+        assert W.grad.shape == (3, 4)

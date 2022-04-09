@@ -171,3 +171,26 @@ def sum_to(x: Variable, name="") -> Variable:
     if not isinstance(y, Variable):
         raise TypeError
     return y
+
+
+class MatMul(Function):
+    def forward(self, *xs: np.ndarray) -> Union[list[np.ndarray], np.ndarray]:
+        if len(xs) != 2:
+            raise ValueError
+        x = xs[0]
+        W = xs[1]
+        y = x.dot(W)
+        return y
+
+    def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
+        if len(gys) != 1:
+            raise ValueError
+        gy: Variable = gys[0]
+        x, W = self.inputs
+        gx = matmul(gy, W.T)
+        gW = matmul(x.T, gy)
+        return [gx, gW]
+
+
+def matmul(x: Variable, W: Variable, name=""):
+    return MatMul(name)(x, W)
