@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 import numpy as np
 from dezero.core import Function, Variable
 
@@ -76,15 +76,15 @@ def cos(x: Variable, name="") -> Variable:
 class Reshape(Function):
     def __init__(self, shape: tuple, name=None) -> None:
         super().__init__(name)
-        self.shape = shape
-        self.x_shape = None  # 入力のshapeを記憶する
+        self.shape: tuple = shape
+        self.x_shape: Optional[tuple] = None  # 入力のshapeを記憶する
 
     def forward(self, *xs: np.ndarray) -> Union[Tuple, np.ndarray]:
         if len(xs) != 1:
             raise ValueError
-        x = xs[0]
-        self.x_shape = x.shape
-        y = x.reshape(self.shape)
+        x: np.ndarray = xs[0]
+        self.x_shape: Optional[tuple] = x.shape
+        y: np.ndarray = x.reshape(self.shape)
         return y
 
     def backward(self, gy: np.ndarray) -> Union[Tuple[np.ndarray], np.ndarray]:
@@ -122,29 +122,52 @@ def transpose(x: Variable, name="") -> Variable:
     return y
 
 
-# class BroadCastTo(Function):
-#     def __init__(self, shape: tuple, name=None) -> None:
-#         super().__init__(name)
-#         self.shape = shape
-#         self.x_shape = None  # 順伝搬時に入力のshapeを記憶する
+class BroadCastTo(Function):
+    def __init__(self, shape: tuple, name=None) -> None:
+        super().__init__(name)
+        self.shape = shape
 
-#     def forward(self, *xs: np.ndarray) -> Union[Tuple, np.ndarray]:
-#         if len(xs) != 1:
-#             raise ValueError
-#         x = xs[0]
-#         y = x.T
-#         return y
+    def forward(self, *xs: np.ndarray) -> Union[Tuple, np.ndarray]:
+        if len(xs) != 1:
+            raise ValueError
+        x = xs[0]
+        y: np.ndarray = np.broadcast_to(x, self.shape)
+        return y
 
-#     def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
-#         # if len(gys) != 1:
-#         #     raise ValueError
-#         # gy = gys[0]
-#         # return transpose(gy)
-#         pass
+    def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
+        if len(gys) != 1:
+            raise ValueError
+        gy: Variable = gys[0]
+
+        return sum_to(gy)
 
 
-# def broad_cast_to(x: Variable, shape: tuple, name="") -> Variable:
-#     y = BroadCastTo(shape, name)
-#     if not isinstance(y, Variable):
-#         raise TypeError
-#     return y
+def broad_cast_to(x: Variable, shape: tuple, name="") -> Variable:
+    y = BroadCastTo(shape, name)(x)
+    if not isinstance(y, Variable):
+        raise TypeError
+    return y
+
+
+class SumTo(Function):
+    def forward(self, *xs: np.ndarray) -> Union[list[np.ndarray], np.ndarray]:
+        if len(xs) != 1:
+            raise ValueError
+        x: np.ndarray = xs[0]
+        self.__x_shape: tuple = x.shape
+        y = x.sum(axis=0)
+        return y
+
+    def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
+        if len(gys) != 1:
+            raise ValueError
+        gy: Variable = gys[0]
+        y: Variable = broad_cast_to(gy, self.__x_shape)
+        return y
+
+
+def sum_to(x: Variable, name="") -> Variable:
+    y = SumTo(name)(x)
+    if not isinstance(y, Variable):
+        raise TypeError
+    return y

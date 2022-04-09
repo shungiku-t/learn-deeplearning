@@ -4,14 +4,14 @@ from dezero.core import Variable
 
 class TestVariable:
 
-    v0 = Variable(np.array(2.0))
-    v1 = Variable(np.array(3.0))
-    n0 = np.array(2.0)
-    n1 = np.array(3.0)
-    f0 = 2.0
-    f1 = 3.0
-    i0 = 2
-    i1 = 3
+    v0: Variable = Variable(np.array(2.0))
+    v1: Variable = Variable(np.array(3.0))
+    n0: np.ndarray = np.array(2.0)
+    n1: np.ndarray = np.array(3.0)
+    f0: float = 2.0
+    f1: float = 3.0
+    i0: int = 2
+    i1: int = 3
 
     def test_shape(self):
         x = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
@@ -153,6 +153,11 @@ class TestVariable:
         y = self.v0 ** 2
         assert y.data == expected.data
 
+    # def test_broadcast(self):
+    #     expected: Variable = Variable(np.array([[1,2,3],[1,2,3]]))
+
+    #     x: Variable = Variable(np.array([1,2,3]))
+
     def test_backward(self):
         x = Variable(np.array(2.0))
         y = x ** 4 - 2 * x ** 2
@@ -164,7 +169,7 @@ class TestVariable:
         print("*********")
         print(gx)
         gx.backward()
-        assert x.grad.data == np.array(68.0)
+        assert x.grad.data == np.array(44.0)
 
     # def test_matyas(self):
     #     x = Variable(np.array(1.0))

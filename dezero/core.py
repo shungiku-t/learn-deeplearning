@@ -130,7 +130,9 @@ class Mul(Function):
     def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
         if len(gys) != 1:
             raise ValueError
-        gy = gys[0]
+        gy: Variable = gys[0]
+        x0: Variable
+        x1: Variable
         x0, x1 = self.inputs[0], self.inputs[1]
         return [x1 * gy, x0 * gy]
 
@@ -279,6 +281,10 @@ class Variable:
         return self.data.ndim
 
     @property
+    def shape(self):
+        return self.data.shape
+
+    @property
     def size(self):
         return self.data.size
 
@@ -312,6 +318,13 @@ class Variable:
     def __add__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(dezero.utils.as_array(other))
+        if self.shape != other.shape:
+            if self.size > other.size:
+                broadcasted_other = dezero.functions.broad_cast_to(other, self.shape)
+                return add(self, broadcasted_other)
+            else:
+                broadcasted_self = dezero.functions.broad_cast_to(self, other.shape)
+                return add(broadcasted_self, other)
         return add(self, other)
 
     def __radd__(self, other: Union[np.ndarray, float, int]) -> Variable:
