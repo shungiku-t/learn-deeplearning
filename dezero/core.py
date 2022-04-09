@@ -333,6 +333,7 @@ class Variable:
     def __mul__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(dezero.utils.as_array(other))
+        # TODO: broadcast対応
         return mul(self, other)
 
     def __rmul__(self, other: Union[np.ndarray, float, int]) -> Variable:
@@ -344,6 +345,7 @@ class Variable:
     def __sub__(self, other: Union[Variable, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(dezero.utils.as_array(other))
+        # TODO: broadcast対応
         return sub(self, other)
 
     def __rsub__(self, other: Union[np.ndarray, float, int]) -> Variable:
@@ -352,6 +354,7 @@ class Variable:
     def __truediv__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(dezero.utils.as_array(other))
+        # TODO: broadcast対応
         return div(self, other)
 
     def __rtruediv__(self, other: Union[np.ndarray, float, int]) -> Variable:

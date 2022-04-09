@@ -30,6 +30,7 @@ class TestVariable:
         assert (y.data == expected.data).all()
 
     def test_add_forward(self):
+        """足し算のテスト"""
         expected = Variable(np.array(5.0))
 
         # Varibleのみ
@@ -57,7 +58,26 @@ class TestVariable:
         y = self.i0 + self.v1
         assert y.data == expected.data
 
+    def test_add_with_broadcast(self):
+        """broadcastを伴う足し算のテスト"""
+        # 1次元の場合
+        expected = Variable(np.array([11, 12, 13]))
+        x0 = Variable(np.array([1, 2, 3]))
+        x1 = Variable(np.array([10]))
+        y = x0 + x1
+
+        assert np.array_equal(y.data, expected.data)
+
+        # ２次元の場合
+        expected = Variable(np.array([[8, 10], [10, 12], [12, 14]]))
+        x0 = Variable(np.array([8, 9]))
+        x1 = Variable(np.array([[0, 1], [2, 3], [4, 5]]))
+        y = x0 + x1
+
+        assert np.array_equal(y.data, expected.data)
+
     def test_sub(self):
+        """引き算のテスト"""
         expected = Variable(np.array(-1.0))
 
         # Varibleのみ
@@ -86,6 +106,7 @@ class TestVariable:
         assert y.data == expected.data
 
     def test_mul(self):
+        """掛け算のテスト"""
         expected = Variable(np.array(6.0))
 
         # Varibleのみ
@@ -114,6 +135,7 @@ class TestVariable:
         assert y.data == expected.data
 
     def test_div(self):
+        """割り算のテスト"""
         expected = Variable(np.array(2.0 / 3.0))
 
         # Varibleのみ
@@ -170,11 +192,3 @@ class TestVariable:
         print(gx)
         gx.backward()
         assert x.grad.data == np.array(44.0)
-
-    # def test_matyas(self):
-    #     x = Variable(np.array(1.0))
-    #     y = Variable(np.array(1.0))
-    #     z = 0.26 * (x ** 2 + y ** 2) - 0.48 * x * y
-    #     z.backward()
-    #     print(x.grad)
-    #     print(y.grad)
