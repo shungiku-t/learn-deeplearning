@@ -369,3 +369,7 @@ class Variable:
         ret += str(self.data).replace("\n", "\n" + " " * 9)
         ret += ")"
         return ret
+
+
+class Parameter(Variable):
+    pass

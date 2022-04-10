@@ -1,5 +1,5 @@
 import numpy as np
-from dezero.core import Variable
+from dezero.core import Parameter, Variable
 
 
 class TestVariable:
@@ -192,3 +192,13 @@ class TestVariable:
         print(gx)
         gx.backward()
         assert x.grad.data == np.array(44.0)
+
+
+class TestParameter:
+    def test_validate_type(self):
+        x = Variable(np.array(1.0))
+        p = Parameter(np.array(2.0))
+        y = x * p
+        assert isinstance(p, Parameter)
+        assert isinstance(x, Variable)
+        assert isinstance(y, Variable)
