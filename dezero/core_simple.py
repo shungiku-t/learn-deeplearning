@@ -256,9 +256,7 @@ class Variable:
     def __len__(self):
         return len(self.data)
 
-    def __add__(
-        self, other: Union[Variable, np.ndarray, float, int]
-    ) -> Variable:
+    def __add__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(utils.as_array(other))
         return add(self, other)
@@ -266,9 +264,7 @@ class Variable:
     def __radd__(self, other: Union[np.ndarray, float, int]) -> Variable:
         return add(self, Variable(utils.as_array(other)))
 
-    def __mul__(
-        self, other: Union[Variable, np.ndarray, float, int]
-    ) -> Variable:
+    def __mul__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(utils.as_array(other))
         return mul(self, other)
@@ -287,9 +283,7 @@ class Variable:
     def __rsub__(self, other: Union[np.ndarray, float, int]) -> Variable:
         return rsub(self, Variable(utils.as_array(other)))
 
-    def __truediv__(
-        self, other: Union[Variable, np.ndarray, float, int]
-    ) -> Variable:
+    def __truediv__(self, other: Union[Variable, np.ndarray, float, int]) -> Variable:
         if not isinstance(other, Variable):
             other = Variable(utils.as_array(other))
         return div(self, other)
@@ -306,17 +300,3 @@ class Variable:
         ret += str(self.data).replace("\n", "\n" + " " * 9)
         ret += ")"
         return ret
-
-
-if __name__ == "__main__":
-    # v1 = Variable(np.array(2.0))
-    # v1 = np.array(2.0)
-    v2 = Variable(np.array(3.0))
-    y = 2.0 / v2
-    # y = v2 * 2.0
-
-    utils.pprint(y)
-    print(y.data)
-
-    # y.backward()
-    # print(v1.grad)
