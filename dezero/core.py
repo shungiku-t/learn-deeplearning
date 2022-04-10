@@ -64,8 +64,8 @@ class Exp(Function):
     def backward(self, *gys: Variable) -> Union[list[Variable], Variable]:
         if len(gys) != 1:
             raise ValueError
-        gy = gys[0]
-        return np.exp(self.inputs[0].data) * gy
+        gy: Variable = gys[0]
+        return exp(self.inputs[0]) * gy
 
 
 def exp(x: Variable, name="") -> Variable:
@@ -262,7 +262,7 @@ class Variable:
             if not isinstance(gxs, list):
                 gxs = [gxs]
 
-            # 逆伝播の結果を対応する入力変数に充てがう処理
+            # 対応する入力変数に逆伝播の結果を充てがう処理
             for x, gx in zip(func.inputs, gxs):
                 if x.grad is None:
                     x.grad = gx
