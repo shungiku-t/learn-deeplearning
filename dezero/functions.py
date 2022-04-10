@@ -179,6 +179,8 @@ class MatMul(Function):
             raise ValueError
         x = xs[0]
         W = xs[1]
+        # print(type(x), type(W))
+        # print(x)
         y = x.dot(W)
         return y
 
@@ -187,6 +189,7 @@ class MatMul(Function):
             raise ValueError
         gy: Variable = gys[0]
         x, W = self.inputs
+        # print(type(gy), type(x), type(W))
         gx = matmul(gy, W.T)
         gW = matmul(x.T, gy)
         return [gx, gW]
