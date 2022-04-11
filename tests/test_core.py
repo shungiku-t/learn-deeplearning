@@ -175,11 +175,6 @@ class TestVariable:
         y = self.v0 ** 2
         assert y.data == expected.data
 
-    # def test_broadcast(self):
-    #     expected: Variable = Variable(np.array([[1,2,3],[1,2,3]]))
-
-    #     x: Variable = Variable(np.array([1,2,3]))
-
     def test_backward(self):
         x = Variable(np.array(2.0))
         y = x ** 4 - 2 * x ** 2
